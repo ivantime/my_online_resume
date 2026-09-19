@@ -2,8 +2,8 @@
   "name": "Your Name",
   "tagline": "I build software and design things, and write up how they came together.",
   "description": "Projects, write-ups and process notes by Your Name.",
-  "siteUrl": "",
-  "base": "/",
+  "siteUrl": "https://ivantime.github.io",
+  "base": "/my_online_resume/",
   "links": [
     { "label": "GitHub", "url": "https://github.com/your-username" },
     { "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-username" },
