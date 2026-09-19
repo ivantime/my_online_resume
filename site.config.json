@@ -11,16 +11,12 @@
   ],
   "tracks": {
     "software-engineering": {
-      "title": "Software engineering",
+      "title": "Software Engineering",
       "blurb": "Backend, tooling and systems work, with the reasoning behind each decision."
     },
     "data-engineering": {
-      "title": "Data engineering",
+      "title": "Data Engineering",
       "blurb": "Pipelines, storage and analysis, from raw data to a usable result."
-    },
-    "design": {
-      "title": "Design",
-      "blurb": "Interfaces and visual work, from first sketch to the shipped result."
     }
   }
 }
