@@ -33,7 +33,7 @@ also works from a project file). `static/img/` still works for site assets, refe
 
 ### Tags become pages
 Every tag creates a page at `/for/<tag>/` listing the projects with that tag,
-for example `/for/software-engineering/` and `/for/design/`. Give a link to a recruiter
+for example `/for/software-engineering/` and `/for/data-engineering/`. Give a link to a recruiter
 that matches the role. Each page has two tabs: **Showcase** (projects with `featured: true`) and
 **All projects**, both ordered newest first by the `date:` header. The home page's featured list and
 the Projects tab use the same ordering. Optional title and blurb per tag go in `site.config.json` under `tracks`.
