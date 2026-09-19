@@ -1,0 +1,26 @@
+{
+  "name": "Your Name",
+  "tagline": "I build software and design things, and write up how they came together.",
+  "description": "Projects, write-ups and process notes by Your Name.",
+  "siteUrl": "",
+  "base": "/",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/your-username" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-username" },
+    { "label": "Email", "url": "mailto:you@example.com" }
+  ],
+  "tracks": {
+    "software-engineering": {
+      "title": "Software engineering",
+      "blurb": "Backend, tooling and systems work, with the reasoning behind each decision."
+    },
+    "data-engineering": {
+      "title": "Data engineering",
+      "blurb": "Pipelines, storage and analysis, from raw data to a usable result."
+    },
+    "design": {
+      "title": "Design",
+      "blurb": "Interfaces and visual work, from first sketch to the shipped result."
+    }
+  }
+}
