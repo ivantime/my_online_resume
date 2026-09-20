@@ -24,7 +24,7 @@ Data showcasing COVID-19 Cases (presented by John Hopkins University) was a good
 ## First: The Elephant
 We decided to retain John Hopkin's <a href="https://www.bloomberg.com/graphics/2020-coronavirus-cases-world-map/#dvz-cases-since">Overview of All Countries Chart Design</a> as the first of many instances to:
 - Give the user all countries to then filter on which (country) regions they would prefer to focus on
-![alt text](../images/covid_line_chart_1_the_elephant.gif)
+![alt text](../images/covid_line_chart_1_the_elephant_1.gif)
 
 Then the twist:
 - Adding a selectable (dotted) reference line at a selectable time instance
@@ -37,7 +37,7 @@ We implemented the ability to toggle from 'All Countries' to 'By Regions' (eg. E
 - Giving a consistent experience of a selecting a time reference line as usual
 - Give the user the ability to selectively focus on a region (i.e. Group of Countries in a Region)
 - Then selectively pick which countries within that region to focus on (thus reducing the clutter of other countries outside of our scope)
-![alt text](../images/covid_line_chart_2_the_drill_through.gif)
+![alt text](../images/covid_line_chart_1_the_revamp.gif)
 
 
 ## Interactive Demo of Revamped Line Chart (Try it out)
