@@ -61,11 +61,23 @@
   if (rail) {
     const links = [...rail.querySelectorAll("a")];
     const heads = links.map((a) => document.getElementById(a.hash.slice(1)));
+    // If the current step is not fully visible in the (scrollable) list, scroll the list so the previous step is at the top.
+    const follow = (li) => {
+      const rr = rail.getBoundingClientRect(), lr = li.getBoundingClientRect();
+      if (lr.top >= rr.top + 8 && lr.bottom <= rr.bottom - 8) return;
+      const pr = (li.previousElementSibling || li).getBoundingClientRect();
+      rail.scrollBy({ top: pr.top - rr.top - 12, behavior: reduce ? "auto" : "smooth" });
+    };
+    const setActive = (cur) => {
+      if (!cur || cur.getAttribute("aria-current")) return;
+      links.forEach((a) => a.removeAttribute("aria-current"));
+      cur.setAttribute("aria-current", "location");
+      follow(cur.closest("li"));
+    };
     const io = new IntersectionObserver((entries) => {
       entries.forEach((en) => {
         if (!en.isIntersecting) return;
-        links.forEach((a) => a.removeAttribute("aria-current"));
-        links[heads.indexOf(en.target)]?.setAttribute("aria-current", "location");
+        setActive(links[heads.indexOf(en.target)]);
       });
     }, { rootMargin: "-15% 0px -75% 0px" });
     heads.forEach((h) => h && io.observe(h));
@@ -77,6 +89,8 @@
       const r = body.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, (innerHeight * 0.4 - r.top) / r.height));
       ol.style.setProperty("--p", p.toFixed(3));
+      // at the very bottom of the page the last section can't reach the highlight band, so it is marked directly
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) setActive(links[links.length - 1]);
     };
     addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
     update();

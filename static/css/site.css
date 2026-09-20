@@ -70,7 +70,8 @@ nav a[aria-current=page]{color:var(--fg);box-shadow:inset 0 -2px var(--accent)}
 .works,.posts{list-style:none;padding:0;margin:0}
 .work a{display:block;padding-block:24px;border-top:1px solid var(--rule);color:inherit;text-decoration:none}
 .work:last-child a{border-bottom:1px solid var(--rule)}
-.work img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;background:var(--panel)}
+/* thumbnails show the whole picture (never cropped); a different shape gets bars of the panel colour */
+.work img{width:100%;aspect-ratio:16/10;object-fit:contain;border-radius:8px;background:var(--panel);border:1px solid var(--rule)}
 .work h3,.posts h3{margin:0 0 6px;font-size:1.4rem}
 .work a:hover h3,.posts a:hover h3{color:var(--accent)}
 .work p,.posts p{color:var(--muted);margin:0 0 8px}
@@ -88,6 +89,8 @@ nav a[aria-current=page]{color:var(--fg);box-shadow:inset 0 -2px var(--accent)}
 .meta dt{font-size:.8rem;color:var(--muted)}
 .meta dd{margin:0;font-weight:500}
 .hero-img{margin:28px 0 0}
+/* credit line centered under the cover picture */
+.hero-img figcaption.img-credit{max-width:none;text-align:center;font-size:.75rem;margin-top:8px}
 .hero-img img{width:100%;border-radius:10px;border:1px solid var(--rule);background:var(--panel)}
 .doc-body{margin-top:12px}
 .prose>*{max-width:68ch}
@@ -97,10 +100,14 @@ nav a[aria-current=page]{color:var(--fg);box-shadow:inset 0 -2px var(--accent)}
 .prose li{margin-bottom:.35em}
 .prose blockquote{margin:1.4em 0;padding-left:1.1em;border-left:3px solid var(--accent);color:var(--muted)}
 .prose :not(pre)>code{font:.85em var(--mono);background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:.1em .35em}
-.prose table{border-collapse:collapse;width:100%;font-size:1rem;margin-bottom:1.2em}
+.prose table{display:block;overflow-x:auto;width:fit-content;max-width:100%;border-collapse:collapse;font-size:1rem;margin-bottom:1.2em}
 .prose th,.prose td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule)}
 figure{margin:2rem 0}
 figure img{width:100%;border-radius:8px;border:1px solid var(--rule);background:var(--panel)}
+/* equations: MathML written directly in the Markdown (no library) */
+.eq{margin:1.4rem 0;padding:14px 18px;background:var(--panel);border:1px solid var(--rule);border-radius:8px;overflow-x:auto}
+.eq math{font-size:1.3rem;color:var(--fg)}
+.eq-note{font-size:.95rem;color:var(--muted)}
 /* PDF page: drawn by js/pdf.js as a canvas + selectable text layer + link areas. Nothing scrolls inside it. */
 .pdf-stage{position:relative;margin-inline:auto;background:var(--panel);border:1px solid var(--rule);border-radius:8px;overflow:hidden;color-scheme:only light}
 .pdf-stage canvas{display:block;width:100%;height:100%}
@@ -136,7 +143,8 @@ figcaption{font-size:.9rem;color:var(--muted);margin-top:8px;max-width:68ch}
 .steps .prose>h2::before{content:counter(step) ".";font:500 .6em var(--mono);color:var(--accent);margin-right:.7em;vertical-align:.15em}
 
 /* step rail: a Bootstrap column (col-lg-3, hidden below lg via d-none d-lg-block) that sticks while the write-up scrolls */
-.rail{position:sticky;top:96px;align-self:flex-start;padding-top:1.6rem}
+/* never taller than the screen: it scrolls inside itself and follows the section being read (see site.js) */
+.rail{position:sticky;top:96px;align-self:flex-start;padding-top:1.6rem;max-height:calc(100vh - 112px);max-height:calc(100dvh - 112px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
 .rail ol{list-style:none;margin:0;padding:0 0 0 16px;position:relative;font:.82rem/1.4 var(--mono);counter-reset:r}
 .rail ol::before,.rail ol::after{content:"";position:absolute;left:0;top:0;width:2px;height:100%;background:var(--rule)}
 .rail ol::after{background:var(--accent);transform-origin:top;transform:scaleY(var(--p,0))}

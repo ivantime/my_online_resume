@@ -27,11 +27,29 @@ const warn = (m) => console.warn("  ! " + m);
 
 // content/images/ is served at /images/. Relative paths such as ../images/a.png or images/a.png map there too.
 // Same for content/files/ (PDFs and downloads), served at /files/.
+// Every file under content/images/ (any depth) by file name, rebuilt on each build. Lets `a.gif`, `/img/a.gif`,
+// `../images/a.gif` or an outdated `/images/a.gif` still find a.gif after it is moved into a project subfolder.
+let imageIndex = null;
+const findImage = (name) => {
+  if (!imageIndex) {
+    imageIndex = new Map();
+    const dir = join(ROOT, "content", "images");
+    if (existsSync(dir)) {
+      for (const rel of readdirSync(dir, { recursive: true })) {
+        const path = String(rel).split("\\").join("/");
+        if (/\.\w+$/.test(path)) imageIndex.set(path.split("/").pop(), path);
+      }
+    }
+  }
+  return imageIndex.get(name);
+};
 const norm = (s) => {
   s = String(s).replace(/^(\.{1,2}\/)*(images|files)\//, "/$2/");
-  // A file dropped in content/images/ is found however it is written: /img/a.gif, a.gif or ../images/a.gif.
-  const name = s.startsWith("/img/") ? s.slice(5) : /^[^/:.][^/:]*\.\w+$/.test(s) ? s : "";
-  if (name && !existsSync(join(ROOT, "static", "img", name)) && existsSync(join(ROOT, "content", "images", name))) return "/images/" + name;
+  const name = s.startsWith("/img/") ? s.slice(5) : s.startsWith("/images/") ? s.slice(8) : /^[^/:.][^/:]*\.\w+$/.test(s) ? s : "";
+  const found = name && !name.includes("/") ? findImage(name) : null;
+  const inStatic = s.startsWith("/img/") && existsSync(join(ROOT, "static", "img", name));
+  const exact = s.startsWith("/images/") && existsSync(join(ROOT, "content", s));
+  if (found && !inStatic && !exact) return "/images/" + found;
   return s;
 };
 function dims(src) {
@@ -146,12 +164,14 @@ function renderMd(body) {
         const out = attrs.img
           ? `<div class="term-out">${img(attrs.img, attrs.alt || "")}${attrs.caption ? `<figcaption>${esc(attrs.caption)}</figcaption>` : ""}</div>`
           : "";
+        // Side by side by default; stacked (code above, picture below) with layout="stack", for wide pictures, or with no picture.
+        const stack = attrs.layout === "stack" || !attrs.img;
         return `<div class="term-split wide row g-3 align-items-start" data-terminal>
-<div class="col-12 col-lg-7"><div class="term">
+<div class="col-12${stack ? "" : " col-lg-7"}"><div class="term">
 <div class="term-bar"><span class="term-file">${esc(attrs.file || language || "terminal")}</span><span class="term-actions"><button type="button" data-term-copy hidden>Copy</button><button type="button" data-term-run hidden>Skip</button></span></div>
 <pre>${inner}</pre>
 </div></div>
-${out ? `<div class="col-12 col-lg-5">${out}</div>` : ""}
+${out ? `<div class="col-12${stack ? "" : " col-lg-5"}">${out}</div>` : ""}
 </div>\n`;
       }
     }
@@ -180,7 +200,7 @@ function byDate(a, b) {
 }
 
 // ---------- templates ----------
-const NAV = [["projects", "Projects"], ["blog", "Blog"], ["about", "About Me"], ["resume", "Resume"], ["contact", "Contact"]];
+const NAV = [["projects", "Projects"], ["blog", "Blog"], ["about", "About Me"], ["contact", "Contact"]];
 const themeIcon = `<svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.75a7.25 7.25 0 0 1 0 14.5z" fill="currentColor"/></svg>`;
 
 function head({ title, desc, path, image }) {
@@ -232,7 +252,7 @@ ${main}
 `;
 }
 
-const tagLinks = (tags) => tags.length ? `<ul class="tags">${tags.map((t) => `<li><a href="${u(`for/${t}/`)}">${esc(trackTitle(t))}</a></li>`).join("")}</ul>` : "";
+const tagLinks = (tags) => tags.length ? `<ul class="tags">${tags.map((t) => `<li><a href="${u(`projects/?tag=${t}`)}">${esc(trackTitle(t))}</a></li>`).join("")}</ul>` : "";
 const trackTitle = (t) => cfg.tracks?.[t]?.title || titleCase(t);
 
 function workList(items, { filter = false } = {}) {
@@ -258,7 +278,7 @@ ${workList(shown)}
 </section>
 ${tags.length ? `<section>
 <h2>Browse by focus</h2>
-<ul class="focus row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-0">${tags.map(([t, n]) => `<li class="col"><a href="${u(`for/${t}/`)}"><strong>${esc(trackTitle(t))}</strong><span>${esc(cfg.tracks?.[t]?.blurb || "")}</span><span class="count">${n} project${n > 1 ? "s" : ""}</span></a></li>`).join("")}</ul>
+<ul class="focus row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-0">${tags.map(([t, n]) => `<li class="col"><a href="${u(`projects/?tag=${t}`)}"><strong>${esc(trackTitle(t))}</strong><span>${esc(cfg.tracks?.[t]?.blurb || "")}</span><span class="count">${n} project${n > 1 ? "s" : ""}</span></a></li>`).join("")}</ul>
 </section>` : ""}
 ${posts.length ? `<section>
 <h2>Latest writing</h2>
@@ -289,12 +309,12 @@ ${it.summary ? `<p class="lead">${esc(it.summary)}</p>` : ""}
 ${meta.length ? `<dl class="meta">${meta.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : ""}
 ${tagLinks(it.tags)}
 </header>
-${it.cover ? `<figure class="hero-img"${it.coverScale ? ` style="width:max(${Math.min(100, Math.max(10, parseInt(it.coverScale, 10) || 100))}%,min(100%,320px));margin-inline:auto"` : ""}>${img(it.cover, it.coverAlt || "", { eager: true })}</figure>` : ""}
+${it.cover ? `<figure class="hero-img"${it.coverScale ? ` style="width:max(${Math.min(100, Math.max(10, parseInt(it.coverScale, 10) || 100))}%,min(100%,320px));margin-inline:auto"` : ""}>${img(it.cover, it.coverAlt || "", { eager: true })}${it.coverSource ? `<figcaption class="img-credit"><a href="${esc(it.coverSource)}" rel="noopener">Image Source</a></figcaption>` : ""}</figure>` : ""}
 <div class="doc-body${rail ? " has-rail row" : ""}${it.steps === false || kind === "post" ? "" : " steps"}">
 ${rail ? `<nav class="rail col-lg-3 d-none d-lg-block" aria-label="Steps in this write-up"><ol>${steps.map((h) => `<li><a href="#${h.id}">${esc(h.text)}</a></li>`).join("")}</ol></nav>` : ""}
 <div class="prose${rail ? " col-12 col-lg-9" : ""}">
 ${it.html}
-${links.length ? `<p class="links">${links.map(([l, url], i) => `<a class="btn${i ? " alt" : ""}" href="${esc(url)}" rel="noopener">${esc(l)}</a>`).join("")}</p>` : ""}
+${links.length ? `<p class="links">${links.map(([l, url], i) => `<a class="btn${i ? " alt" : ""}" href="${esc(fix(url))}" rel="noopener">${esc(l)}</a>`).join("")}</p>` : ""}
 </div>
 </div>
 </article>`;
@@ -339,6 +359,7 @@ function copyPdfjs() {
 
 function build() {
   const t0 = Date.now();
+  imageIndex = null;
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
   cpSync(join(ROOT, "static"), OUT, { recursive: true });
@@ -371,18 +392,6 @@ function build() {
   for (const p of posts) {
     const path = `blog/${p.slug}/`;
     write(path + "index.html", shell({ title: p.title, desc: p.summary, path, current: "blog", main: article("post", p) }));
-    urls.push(path);
-  }
-
-  // One page per tag: /for/<tag>/ lists every project carrying that tag.
-  for (const [t] of tags) {
-    const path = `for/${t}/`;
-    const info = cfg.tracks?.[t] || {};
-    const all = projects.filter((p) => p.tags.includes(t)).sort(byDate);
-    write(path + "index.html", shell({
-      title: `${trackTitle(t)} projects`, desc: info.blurb, path,
-      main: `<h1>${esc(trackTitle(t))}</h1>${info.blurb ? `<p class="lead">${esc(info.blurb)}</p>` : ""}${workList(all)}`
-    }));
     urls.push(path);
   }
 

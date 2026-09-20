@@ -5,8 +5,8 @@
   "siteUrl": "https://ivantime.github.io",
   "base": "/my_online_resume/",
   "links": [
-    { "label": "GitHub", "url": "https://github.com/your-username" },
-    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-username" },
+    { "label": "GitHub", "url": "https://github.com/ivantime" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/ivantime0/" },
     { "label": "Email", "url": "mailto:you@example.com" }
   ],
   "tracks": {

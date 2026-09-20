@@ -31,10 +31,12 @@ Create `content/projects/<slug>.md`:
 Put images in `content/images/` and reference them as `/images/x.png` (or `../images/x.png`, which
 also works from a project file). `static/img/` still works for site assets, referenced as `/img/...`.
 
-### Tags become pages
-Every tag creates a page at `/for/<tag>/` listing the projects with that tag,
-for example `/for/software-engineering/` and `/for/data-engineering/`. Give a link to a recruiter
-that matches the role. Each page lists every project with that tag, newest first by the `date:` header. `featured: true` only controls what appears on the home page. Optional title and blurb per tag go in `site.config.json` under `tracks`.
+### Tags become filters
+Every tag becomes a filter button on the Projects page, and a link to it: `/projects/?tag=software-engineering`,
+`/projects/?tag=data-engineering`. Give a link like that to a recruiter to show only the projects for their role.
+The tag chips on a project page and the "Browse by focus" cards on the home page link the same way. Projects are
+listed newest first by the `date:` header, and `featured: true` only controls the home page's featured list.
+Optional title and blurb per tag go in `site.config.json` under `tracks`.
 
 ### Typing terminal + output image
     ```python terminal file="fit.py" img="/img/my-project/out.png" alt="Result" caption="What it shows"
@@ -43,9 +45,17 @@ that matches the role. Each page lists every project with that tag, newest first
 The code types itself when scrolled into view (with Skip / Replay / Copy buttons), then the image
 beside it appears. With reduced-motion enabled, or without JS, everything is shown at once.
 
+Add `layout="stack"` to the fence to put the picture under the code instead of beside it (good for wide
+tables). With no `img`, the terminal is full width.
+
+### Other blocks
+- PDF page: ` ```pdf src="/files/report.pdf" page="3" width="80%" ratio="210/297" caption="..." `
+- Live page behind a button: ` ```embed src="https://..." button="Try it" width="90%" ratio="16/9" `
+- Equations: write MathML in a `<div class="eq"><math display="block">...</math></div>` block (no library needed).
+
 ## Blog and pages
 - `content/blog/*.md` are posts (`title`, `date`, `summary`).
-- `content/pages/about.md`, `resume.md`, `contact.md` are the plain pages.
+- `content/pages/about.md` and `contact.md` are the plain pages. Any other `.md` file added to `content/pages/` becomes a page at `/<name>/`; add it to the `NAV` list in `build.mjs` to get a tab.
 - Add `draft: true` to hide any file.
 
 ## Deploy
