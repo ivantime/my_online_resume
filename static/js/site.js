@@ -56,31 +56,6 @@
     apply(new URLSearchParams(location.search).get("tag") || "");
   }
 
-  // ---- tabs on /for/<tag>/ (both lists stay visible without JS) ----
-  const tabs = document.querySelector("[data-tabs]");
-  if (tabs) {
-    tabs.hidden = false;
-    const btns = [...tabs.querySelectorAll("[role=tab]")];
-    const show = (b, focus) => {
-      btns.forEach((x) => {
-        const on = x === b;
-        x.setAttribute("aria-selected", String(on));
-        x.tabIndex = on ? 0 : -1;
-        document.getElementById(x.getAttribute("aria-controls")).hidden = !on;
-      });
-      if (focus) b.focus();
-      history.replaceState(null, "", b.id === "tab-all" ? "#all" : location.pathname);
-    };
-    btns.forEach((b, i) => {
-      b.onclick = () => show(b);
-      b.onkeydown = (e) => {
-        const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-        if (d) { e.preventDefault(); show(btns[(i + d + btns.length) % btns.length], true); }
-      };
-    });
-    show(location.hash === "#all" ? btns[1] : btns[0]);
-  }
-
   // ---- step rail: highlight current step, fill progress line ----
   const rail = document.querySelector(".rail");
   if (rail) {

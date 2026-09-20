@@ -34,9 +34,7 @@ also works from a project file). `static/img/` still works for site assets, refe
 ### Tags become pages
 Every tag creates a page at `/for/<tag>/` listing the projects with that tag,
 for example `/for/software-engineering/` and `/for/data-engineering/`. Give a link to a recruiter
-that matches the role. Each page has two tabs: **Showcase** (projects with `featured: true`) and
-**All projects**, both ordered newest first by the `date:` header. The home page's featured list and
-the Projects tab use the same ordering. Optional title and blurb per tag go in `site.config.json` under `tracks`.
+that matches the role. Each page lists every project with that tag, newest first by the `date:` header. `featured: true` only controls what appears on the home page. Optional title and blurb per tag go in `site.config.json` under `tracks`.
 
 ### Typing terminal + output image
     ```python terminal file="fit.py" img="/img/my-project/out.png" alt="Result" caption="What it shows"

@@ -379,19 +379,9 @@ function build() {
     const path = `for/${t}/`;
     const info = cfg.tracks?.[t] || {};
     const all = projects.filter((p) => p.tags.includes(t)).sort(byDate);
-    const showcase = all.filter((p) => p.featured);
-    // Showcase tab = featured projects with this tag; All projects tab = every project with it. Both newest first.
-    const panels = showcase.length
-      ? `<div class="tabs" role="tablist" aria-label="${esc(trackTitle(t))} projects" data-tabs hidden>
-<button type="button" role="tab" id="tab-showcase" aria-controls="panel-showcase" aria-selected="true">Showcase <span>${showcase.length}</span></button>
-<button type="button" role="tab" id="tab-all" aria-controls="panel-all" aria-selected="false" tabindex="-1">All projects <span>${all.length}</span></button>
-</div>
-<section id="panel-showcase" role="tabpanel" aria-labelledby="tab-showcase" data-panel><h2>Showcase</h2>${workList(showcase)}</section>
-<section id="panel-all" role="tabpanel" aria-labelledby="tab-all" data-panel><h2>All projects</h2>${workList(all)}</section>`
-      : workList(all);
     write(path + "index.html", shell({
       title: `${trackTitle(t)} projects`, desc: info.blurb, path,
-      main: `<h1>${esc(trackTitle(t))}</h1>${info.blurb ? `<p class="lead">${esc(info.blurb)}</p>` : ""}${panels}<p class="more">More about me: <a href="${u("about/")}">About</a>, <a href="${u("resume/")}">Resume</a>, <a href="${u("contact/")}">Contact</a>.</p>`
+      main: `<h1>${esc(trackTitle(t))}</h1>${info.blurb ? `<p class="lead">${esc(info.blurb)}</p>` : ""}${workList(all)}`
     }));
     urls.push(path);
   }

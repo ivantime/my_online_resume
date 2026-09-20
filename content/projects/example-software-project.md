@@ -2,7 +2,7 @@
 title: Example software project
 date: 2026-09-01
 summary: A sample write-up showing the typing terminal, the output image beside it, and the step rail.
-tags: [software-engineering, data-engineering]
+tags: [software-engineering]
 featured: true
 role: Solo project
 tools: [Python, NumPy]
